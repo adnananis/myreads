@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import * as BooksAPI from "./BooksAPI";
 import Book from "./Book";
 
 function SearchPage({ myBooks, onShelfChange }) {
   const [query, setQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
   const [results, setResults] = useState([]);
+
+  // Debounce the query
   useEffect(() => {
-    if (query.trim() === "") {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(query);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  // Search when debouncedQuery changes
+  useEffect(() => {
+    if (debouncedQuery.trim() === "") {
       setResults([]);
       return;
     }
     let active = true;
-    BooksAPI.search(query, 20).then(data => {
+    BooksAPI.search(debouncedQuery, 20).then(data => {
       if (!active) return;
       if (!data || data.error) {
         setResults([]);
@@ -26,7 +38,7 @@ function SearchPage({ myBooks, onShelfChange }) {
       }
     });
     return () => { active = false; };
-  }, [query, myBooks]);
+  }, [debouncedQuery, myBooks]);
 
   return (
     <div className="search-books">
@@ -55,5 +67,10 @@ function SearchPage({ myBooks, onShelfChange }) {
     </div>
   );
 }
+
+SearchPage.propTypes = {
+  myBooks: PropTypes.array.isRequired,
+  onShelfChange: PropTypes.func.isRequired,
+};
 
 export default SearchPage;
