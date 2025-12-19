@@ -3,6 +3,14 @@ import PropTypes from "prop-types";
 
 function Book({ book, onShelfChange }) {
   const thumbnail = book.imageLinks?.thumbnail || "";
+
+  const shelves = [
+    { id: "1", shelfName: "currentlyReading", shelfDisplayName: "Currently Reading" },
+    { id: "2", shelfName: "wantToRead", shelfDisplayName: "Want to Read" },
+    { id: "3", shelfName: "read", shelfDisplayName: "Read" },
+    { id: "4", shelfName: "none", shelfDisplayName: "None" },
+  ];
+
   return (
     <div className="book">
       <div className="book-top">
@@ -23,10 +31,11 @@ function Book({ book, onShelfChange }) {
             <option value="" disabled>
               Move to...
             </option>
-            <option value="currentlyReading">Currently Reading</option>
-            <option value="wantToRead">Want to Read</option>
-            <option value="read">Read</option>
-            <option value="none">None</option>
+            {shelves.map(shelf => (
+              <option key={shelf.id} value={shelf.shelfName}>
+                {shelf.shelfDisplayName}
+              </option>
+            ))}
           </select>
         </div>
       </div>
